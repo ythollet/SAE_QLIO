@@ -1,0 +1,60 @@
+services:
+  # --- Service Base de Données (MySQL) ---
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      # Variables d'environnement importantes pour MySQL
+      MYSQL_ROOT_PASSWORD: root  # À changer en production !
+      MYSQL_DATABASE: mes4
+      MYSQL_USER: client
+      MYSQL_PASSWORD: mdp # À changer en production !
+    volumes:
+      - db_data:/var/lib/mysql # Pour persister les données de la base de données
+    networks:
+      - app_network
+
+  # --- Service d'Administration de la Base de Données (phpMyAdmin) ---
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_interface
+    restart: always
+    ports:
+      - "8080:80"  # Accès via http://localhost:8080
+    environment:
+      PMA_HOST: db # Nom du service MySQL dans le réseau Docker Compose
+      UPLOAD_LIMIT: 128M      # Augmente la limite de taille de fichier à 128 Mo
+      MEMORY_LIMIT: 512M      # Augmente la mémoire disponible à 512 Mo
+      MAX_EXECUTION_TIME: 600 # Augmente le temps d'exécution à 600 secondes (10 minutes)
+    depends_on:
+      - db # S'assurer que MySQL est démarré avant
+    networks:
+      - app_network
+
+  # --- Service Application Streamlit ---
+  streamlit_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: streamlit_dashboard
+    ports:
+      - "8501:8501" # Accès via http://localhost:8501
+    environment:
+      # Les variables d'environnement sont utiles pour la connexion à la base de données
+      DB_HOST: db # IMPORTANT : Utiliser le nom du service 'db' comme hostname
+      DB_USER: client
+      DB_PASSWORD: mdp
+      DB_NAME: mes4
+    depends_on:
+      - db # S'assurer que MySQL est démarré avant
+    networks:
+      - app_network
+
+# Définition des volumes et réseaux
+volumes:
+  db_data:
+
+networks:
+  app_network:
+    driver: bridge

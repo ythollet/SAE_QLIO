@@ -1,0 +1,21 @@
+# Python cache
+__pycache__/
+
+# Environnements virtuels (ne jamais commiter ceci)
+venv/
+env/
+.venv/
+
+# Variables d'environnement (contient souvent des secrets)
+.env
+
+# Fichiers de configuration des IDE
+.vscode/
+.idea/
+
+# Distribution et builds
+dist/
+build/
+*.egg-info/
+*.py[cod]
+
