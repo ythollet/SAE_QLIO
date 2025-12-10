@@ -2,6 +2,9 @@ import streamlit as st
 import mysql.connector
 import os # Pour lire les variables d'environnement
 import pandas as pd # Importer pandas pour la manipulation des données
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+
 
 # Récupération des informations de connexion depuis les variables d'environnement
 DB_HOST = os.environ.get("DB_HOST", "db") # Le nom de service est 'db'
@@ -71,8 +74,22 @@ def func_page1():
 
                 # Graphique : Nombre de produits terminés par jour
                 df['End'] = pd.to_datetime(df['End'])
-                chart_data = df.set_index('End').resample('D').size()
-                st.bar_chart(chart_data)
+                
+                # On récupère la date actuelle
+                today = datetime.now()
+
+                # On récupère les 30 derniers jours
+                mask = (df['End'] > today-relativedelta(days = 30))
+                col_end = df['End'].loc[mask].reset_index(drop=True)
+
+                # On groupe par jour et on coumpte les produits terminés pour chaque jour
+                col_end_groupby_day = col_end.groupby(col_end.dt.date).count().rename("nb produits terminés").to_frame()
+                
+                # Affiche le barchart
+                st.bar_chart(
+                    col_end_groupby_day,
+                    y = 'nb produits terminés'
+                )
             
             with col2:
 

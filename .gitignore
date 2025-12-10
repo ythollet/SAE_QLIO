@@ -19,3 +19,6 @@ build/
 *.egg-info/
 *.py[cod]
 
+# Fichier test
+tests.ipynb
+
