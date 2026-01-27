@@ -1,10 +1,11 @@
 import streamlit as st
 import mysql.connector
-import os # Pour lire les variables d'environnement
-import pandas as pd # Importer pandas pour la manipulation des données
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+import os 
+import pandas as pd 
+from page1.barchart_end_products_by_days import *
 
+# La configuration de la page doit être la première commande Streamlit
+st.set_page_config(layout='wide')
 
 # Récupération des informations de connexion depuis les variables d'environnement
 DB_HOST = os.environ.get("DB_HOST", "db") # Le nom de service est 'db'
@@ -33,7 +34,6 @@ def func_query_db(
 
 def func_page1():
     try:
-
         st.header("Affichage des 100 premières lignes")
 
         query = "SELECT * FROM tblfinorder;"
@@ -72,24 +72,7 @@ def func_page1():
                     value = df['End'].count()
                 )
 
-                # Graphique : Nombre de produits terminés par jour
-                df['End'] = pd.to_datetime(df['End'])
-                
-                # On récupère la date actuelle
-                today = datetime.now()
-
-                # On récupère les 30 derniers jours
-                mask = (df['End'] > today-relativedelta(days = 30))
-                col_end = df['End'].loc[mask].reset_index(drop=True)
-
-                # On groupe par jour et on coumpte les produits terminés pour chaque jour
-                col_end_groupby_day = col_end.groupby(col_end.dt.date).count().rename("nb produits terminés").to_frame()
-                
-                # Affiche le barchart
-                st.bar_chart(
-                    col_end_groupby_day,
-                    y = 'nb produits terminés'
-                )
+                func_barchart_end_products_by_days(df)
             
             with col2:
 
