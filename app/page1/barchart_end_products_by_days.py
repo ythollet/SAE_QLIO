@@ -42,7 +42,7 @@ def func_barchart_end_products_by_days(in_df_tblfinorder):
                 y = alt.Y(
                     'nb_produits_termines',
                     axis = alt.Axis(
-                        title = 'Nombre produits terminés',
+                        title = 'Nombre Produits Terminés',
                         titleFontWeight = 'bold'
                         )
                     ),
@@ -55,7 +55,7 @@ def func_barchart_end_products_by_days(in_df_tblfinorder):
             )                      
                 ).properties(
                     title = alt.TitleParams(
-                        text = 'Nombre de produits terminés par jour',
+                        text = 'Nombre de Produits Terminés par Jour',
                         anchor = 'middle',
                         fontSize = 30
                     )
@@ -64,7 +64,6 @@ def func_barchart_end_products_by_days(in_df_tblfinorder):
 
     # Etiquettes de données
     etiquettes = barres.mark_text(
-        # color = 'white',
         dy = -12,
         fontSize = 15
         ).encode(
