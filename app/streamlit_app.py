@@ -37,11 +37,11 @@ def func_page1():
         st.header("Affichage des 100 premières lignes")
 
         query = "SELECT * FROM tblfinorder;"
-        df = func_query_db(
+        df_tblfinorder = func_query_db(
             in_query = query
         )
 
-        st.dataframe(df)
+        st.dataframe(df_tblfinorder)
 
         st.markdown("""
             <style>
@@ -69,16 +69,16 @@ def func_page1():
 
                 st.metric(
                     label = "nb produis terminés", 
-                    value = df['End'].count()
+                    value = df_tblfinorder['End'].count()
                 )
 
-                func_barchart_end_products_by_days(df)
+                func_barchart_end_products_by_days(df_tblfinorder)
             
             with col2:
 
                 st.metric(
                     label = "temps moyen traitement", 
-                    value = str((df['End']-df['Start']).mean()).split('.')[0].replace('0 days ','')
+                    value = str((df_tblfinorder['End']-df_tblfinorder['Start']).mean()).split('.')[0].replace('0 days ','')
                 )
 
     except mysql.connector.Error as e:
