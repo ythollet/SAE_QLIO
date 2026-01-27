@@ -1,11 +1,8 @@
 import streamlit as st
 import mysql.connector
-import os # Pour lire les variables d'environnement
-import pandas as pd # Importer pandas pour la manipulation des données
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-import altair as alt
-
+import os 
+import pandas as pd 
+from page1.barchart_end_products_by_days import *
 
 # La configuration de la page doit être la première commande Streamlit
 st.set_page_config(layout='wide')
@@ -74,88 +71,6 @@ def func_page1():
                     label = "nb produis terminés", 
                     value = df['End'].count()
                 )
-
-                def func_barchart_end_products_by_days(in_df):
-                    
-                    # On travaille sur une copie pour éviter de modifier le DF original
-                    in_df = in_df.copy()
-
-
-                    # Graphique : Nombre de produits terminés par jour
-                    in_df['End'] = pd.to_datetime(in_df['End'])
-                    
-                    # On récupère la date actuelle
-                    today = datetime.now()
-
-                    # On récupère les 60 derniers jours
-                    mask = (in_df['End'] > today-relativedelta(days = 100))
-                    col_end = in_df['End'].loc[mask].reset_index(drop=True)
-
-                    # On groupe par jour et on coumpte les produits terminés pour chaque jour
-                    df_end_groupby_day = col_end.groupby(col_end.dt.date).count().rename("nb_produits_termines").to_frame().reset_index()
-
-                    # Barres du graphique
-                    barres = alt.Chart(df_end_groupby_day).mark_bar(
-                        size = 30,
-                        cornerRadius = 5
-                        ).encode(
-                            x = alt.X(
-                                'End:T',
-                                axis = alt.Axis(
-                                    format = '%d %b',
-                                    title = 'Date',
-                                    titleFontWeight = 'bold'
-                                    )
-                                ),
-                            y = alt.Y(
-                                'nb_produits_termines',
-                                axis = alt.Axis(
-                                    title = 'Nombre produits terminés',
-                                    titleFontWeight = 'bold'
-                                    )
-                                ),
-                            color = alt.Color(
-                                'nb_produits_termines:Q',
-                                scale = alt.Scale(
-                                    range = ["#D0A0F7", "#9139D8", "#7A06DA"]
-                            ),
-                            legend = None
-                        )                      
-                            ).properties(
-                                title = alt.TitleParams(
-                                    text = 'Nombre de produits terminés par jour',
-                                    anchor = 'middle',
-                                    fontSize = 30
-                                )
-                                
-                            )
-
-                    # Etiquettes de données
-                    etiquettes = barres.mark_text(
-                        # color = 'white',
-                        dy = -12,
-                        fontSize = 15
-                        ).encode(
-                            text = alt.Text(
-                                'nb_produits_termines', 
-                                format = '.0f',
-                                
-                                )
-                            )
-
-                    # Seuil objectif
-                    df_seuil = pd.DataFrame({'seuil': [4]})
-                    seuil = alt.Chart(df_seuil).mark_rule(
-                        color = 'chartreuse',
-                        strokeDash = [5, 8],
-                        strokeCap = 'round'
-                        ).encode(
-                            y = 'seuil'
-                        )
-
-                    barchart = barres + etiquettes + seuil
-
-                    st.altair_chart(barchart, use_container_width=True)
 
                 func_barchart_end_products_by_days(df)
             
