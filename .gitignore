@@ -1,17 +1,24 @@
 # Python cache
+# Python
 __pycache__/
 
 # Environnements virtuels (ne jamais commiter ceci)
+*.py[cod]
+*$py.class
+.venv/
 venv/
 env/
 .venv/
 
 # Variables d'environnement (contient souvent des secrets)
+# Docker
 .env
 
 # Fichiers de configuration des IDE
 .vscode/
 .idea/
+# Données locales (si vous montez un volume local)
+db_data/
 
 # Distribution et builds
 dist/
@@ -22,3 +29,6 @@ build/
 # Fichier test
 tests.ipynb
 
+# OS
+.DS_Store
+Thumbs.db

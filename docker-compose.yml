@@ -48,10 +48,14 @@ services:
       DB_USER: client
       DB_PASSWORD: mdp
       DB_NAME: mes4
+      STREAMLIT_SERVER_RUN_ON_SAVE: "true"
+      STREAMLIT_SERVER_FILE_WATCHER_TYPE: "poll"
     depends_on:
       - db # S'assurer que MySQL est démarré avant
     networks:
       - app_network
+    volumes:
+      - ./app:/app
 
 # Définition des volumes et réseaux
 volumes:
