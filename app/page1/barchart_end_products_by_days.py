@@ -5,21 +5,20 @@ from dateutil.relativedelta import relativedelta
 import altair as alt
 from page1.barchart_end_products_by_days import *
 
-def func_barchart_end_products_by_days(in_df):
+def func_barchart_end_products_by_days(in_df_tblfinorder):
                     
     # On travaille sur une copie pour éviter de modifier le DF original
-    in_df = in_df.copy()
-
+    in_df_tblfinorder = in_df_tblfinorder.copy()
 
     # Graphique : Nombre de produits terminés par jour
-    in_df['End'] = pd.to_datetime(in_df['End'])
+    in_df_tblfinorder['End'] = pd.to_datetime(in_df_tblfinorder['End'])
     
     # On récupère la date actuelle
     today = datetime.now()
 
     # On récupère les 60 derniers jours
-    mask = (in_df['End'] > today-relativedelta(days = 100))
-    col_end = in_df['End'].loc[mask].reset_index(drop=True)
+    mask = (in_df_tblfinorder['End'] > today-relativedelta(days = 100))
+    col_end = in_df_tblfinorder['End'].loc[mask].reset_index(drop=True)
 
     # On groupe par jour et on coumpte les produits terminés pour chaque jour
     df_end_groupby_day = col_end.groupby(col_end.dt.date).count().rename("nb_produits_termines").to_frame().reset_index()
