@@ -15,7 +15,7 @@ def func_barchart_nb_produits_termines_par_jour():
             DATE(End) as jour,
             COUNT(ONo) as nb_produits_termines,
             CASE 
-                WHEN COUNT(ONo) > 4 THEN 'Objectif atteint'
+                WHEN COUNT(ONo) > {seuil_objectif_graphique} THEN 'Objectif atteint'
                 ELSE 'Objectif non-atteint'
             END
             as statut
