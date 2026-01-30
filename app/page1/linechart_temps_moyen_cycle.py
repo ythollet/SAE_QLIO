@@ -2,7 +2,7 @@ from utils.cnx_sql import func_query_sql_df
 import altair as alt
 import streamlit as st
 
-def curve_time_avg_order():
+def func_linechart_temps_moyen_cycle():
 
     query = """
         SELECT 
