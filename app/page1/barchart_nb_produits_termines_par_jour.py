@@ -3,9 +3,8 @@ import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import altair as alt
-from page1.barchart_end_products_by_days import *
 
-def func_barchart_end_products_by_days(in_df_tblfinorder):
+def func_barchart_nb_produits_termines_par_jour(in_df_tblfinorder):
                     
     # On travaille sur une copie pour éviter de modifier le DF original
     in_df_tblfinorder = in_df_tblfinorder.copy()

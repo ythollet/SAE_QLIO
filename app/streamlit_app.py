@@ -1,10 +1,10 @@
 import streamlit as st
 import mysql.connector
 import pandas as pd 
-from page1.barchart_end_products_by_days import *
-from page1.curve_time_avg_order import *
-from page1.kpi_cycle_moyen import *
-from page1.kpi_nb_products_done import *
+from page1.barchart_nb_produits_termines_par_jour import *
+from page1.linechart_temps_moyen_cycle import *
+from page1.kpi_temps_moyen_cycle import *
+from page1.kpi_nb_produits_termines import *
 from utils.cnx_sql import func_query_sql_df
 
 # La configuration de la page doit être la première commande Streamlit
@@ -50,9 +50,9 @@ def func_page1():
 
             with st.container(border = True):
                 
-                func_kpi_nb_products_done()
+                func_kpi_nb_produits_termines()
 
-                func_barchart_end_products_by_days(df_tblfinorder)
+                func_barchart_nb_produits_termines_par_jour(df_tblfinorder)
         
         with col2:
 
@@ -63,9 +63,9 @@ def func_page1():
             
             with st.container(border = True):
 
-                func_kpi_cycle_moyen()
+                func_kpi_temps_moyen_cycle()
 
-                curve_time_avg_order()
+                func_linechart_temps_moyen_cycle()
 
 pages = [
     st.Page(func_page1, title = 'Page 1', icon = "📊")

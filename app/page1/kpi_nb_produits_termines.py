@@ -2,7 +2,7 @@ import streamlit as st
 from utils.cnx_sql import func_query_sql_df
 
 
-def func_kpi_nb_products_done():
+def func_kpi_nb_produits_termines():
 
     query = """
     SELECT 

@@ -1,7 +1,7 @@
 from utils.cnx_sql import func_query_sql_df
 import streamlit as st
 
-def func_kpi_cycle_moyen():
+def func_kpi_temps_moyen_cycle():
 
     query = """
         SELECT 
