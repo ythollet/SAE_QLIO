@@ -57,6 +57,7 @@ def func_barchart_nb_produits_termines_par_jour():
                 ),
             )                      
                 ).properties(
+                    height = 400,
                     title = alt.TitleParams(
                         text = 'Nombre de Produits Terminés par Jour',
                         anchor = 'middle',
