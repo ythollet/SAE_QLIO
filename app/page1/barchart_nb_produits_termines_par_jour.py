@@ -1,45 +1,49 @@
 import streamlit as st
+from utils.cnx_sql import func_query_sql_df
 import pandas as pd 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import altair as alt
 
-def func_barchart_nb_produits_termines_par_jour(in_df_tblfinorder):
-                    
-    # On travaille sur une copie pour éviter de modifier le DF original
-    in_df_tblfinorder = in_df_tblfinorder.copy()
+def func_barchart_nb_produits_termines_par_jour():
 
-    # Graphique : Nombre de produits terminés par jour
-    in_df_tblfinorder['End'] = pd.to_datetime(in_df_tblfinorder['End'])
+
+    seuil_objectif_graphique = 4
+
+    query = f"""
+        SELECT 
+            DATE(End) as jour,
+            COUNT(ONo) as nb_produits_termines,
+            CASE 
+                WHEN COUNT(ONo) > {seuil_objectif_graphique} THEN 'Objectif atteint'
+                ELSE 'Objectif non-atteint'
+            END
+            as statut
+        FROM tblfinorder
+        WHERE End > (CURDATE() - INTERVAL 100 DAY)
+        GROUP BY DATE(End) 
+        """
     
-    # On récupère la date actuelle
-    today = datetime.now()
-
-    # On récupère les 60 derniers jours
-    mask = (in_df_tblfinorder['End'] > today-relativedelta(days = 100))
-    col_end = in_df_tblfinorder['End'].loc[mask].reset_index(drop=True)
-
-    # On groupe par jour et on coumpte les produits terminés pour chaque jour
-    df_end_groupby_day = col_end.groupby(col_end.dt.date).count().rename("nb_produits_termines").to_frame().reset_index()
+    df = func_query_sql_df(
+        in_query = query
+    )              
     
     # Barres du graphique
-    barres = alt.Chart(df_end_groupby_day).mark_bar(
+    barres = alt.Chart(df).mark_bar(
         size = 30,
         cornerRadius = 5
-        ).transform_calculate(
-            statut = "datum.nb_produits_termines > 4? 'Objectif atteint' : 'Objectif non-atteint'"
-            ).encode(
+        ).encode(
                 x = alt.X(
-                    'End:T',
+                    'jour:T',
                     axis = alt.Axis(
                         format = '%d %b',
                         title = 'Date',
                         titleFontWeight = 'bold',
-                        tickMinStep = 86400000 # Force un pas minimum d'un jour (en ms) pour éviter les doublons
+                        # tickMinStep = 86400000 # Force un pas minimum d'un jour (en ms) pour éviter les doublons
                         )
                     ),
                 y = alt.Y(
-                    'nb_produits_termines',
+                    'nb_produits_termines:Q',
                     axis = alt.Axis(
                         title = 'Nombre Produits Terminés',
                         titleFontWeight = 'bold'
@@ -68,7 +72,7 @@ def func_barchart_nb_produits_termines_par_jour(in_df_tblfinorder):
         fontSize = 15
         ).encode(
             text = alt.Text(
-                'nb_produits_termines', 
+                'nb_produits_termines:Q', 
                 format = '.0f',
                 
                 )
