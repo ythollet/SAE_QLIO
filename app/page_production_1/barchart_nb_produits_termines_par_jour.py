@@ -81,7 +81,7 @@ def func_barchart_nb_produits_termines_par_jour():
     # Seuil objectif
     df_seuil = pd.DataFrame({'seuil': [4]})
     seuil = alt.Chart(df_seuil).mark_rule(
-        color = 'chartreuse',
+        color = 'white',
         strokeDash = [5, 8],
         strokeCap = 'round'
         ).encode(
