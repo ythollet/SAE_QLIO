@@ -13,11 +13,6 @@ st.set_page_config(layout='wide')
 
 def func_page1():
 
-    query = "SELECT * FROM tblfinorder;"
-    df_tblfinorder = func_query_sql_df(
-        in_query = query
-    )
-
     st.markdown("""
         <style>
         div[data-testid="stMetric"] {
@@ -52,7 +47,7 @@ def func_page1():
                 
                 func_kpi_nb_produits_termines()
 
-                func_barchart_nb_produits_termines_par_jour(df_tblfinorder)
+                func_barchart_nb_produits_termines_par_jour()
         
         with col2:
 
