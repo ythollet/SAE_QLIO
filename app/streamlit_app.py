@@ -14,7 +14,7 @@ pages = [
     st.Page(func_page_production_1, title = 'Page Production 1', icon = "📊"),
     st.Page(func_page_production_2, title = 'Page Production 2', icon = "📊"),
     st.Page(func_page_logistique_stock, title = 'Page Logistique/Stock'),
-    st.Page(func_page_qualite, title = 'Page Qualité', icon = "📈")
+    st.Page(func_page_qualite, title = 'Page Qualité', icon = "📈"),
     st.Page(func_page_maintenance, title = 'Page Maintenance', icon = "🛠️")
 ]
 
