@@ -9,7 +9,7 @@ def func_linechart_temps_moyen_cycle():
             Start as "date",
             CAST(TIMESTAMPDIFF(MINUTE,Start,End) as UNSIGNED) as temps_cycle_minutes
         FROM `tblfinorder` 
-        WHERE TIMESTAMPDIFF(DAY,DATE(Start),CURDATE()) <= 100
+        WHERE TIMESTAMPDIFF(DAY,DATE(Start),CURDATE()) <= 200
     """
 
     df = func_query_sql_df(query)
