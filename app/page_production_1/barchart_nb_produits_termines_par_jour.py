@@ -20,7 +20,7 @@ def func_barchart_nb_produits_termines_par_jour():
             END
             as statut
         FROM tblfinorder
-        WHERE End > (CURDATE() - INTERVAL 100 DAY)
+        WHERE End > (CURDATE() - INTERVAL 200 DAY)
         GROUP BY DATE(End) 
         """
     

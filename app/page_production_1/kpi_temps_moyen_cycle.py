@@ -7,7 +7,7 @@ def func_kpi_temps_moyen_cycle():
         SELECT 
             AVG(TIMESTAMPDIFF(SECOND,Start,End)) as temps_cycle_moyen
         FROM `tblfinorder` 
-        WHERE TIMESTAMPDIFF(DAY,DATE(Start),CURDATE()) <= 100
+        WHERE TIMESTAMPDIFF(DAY,DATE(Start),CURDATE()) <= 200
     """
 
     df_temps_cycle_moyen = func_query_sql_df(query)
