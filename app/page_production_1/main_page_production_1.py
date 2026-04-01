@@ -1,4 +1,5 @@
 import streamlit as st
+from utils.date_filter import func_date_filter
 from page_production_1.barchart_nb_produits_termines_par_jour import func_barchart_nb_produits_termines_par_jour
 from page_production_1.kpi_nb_produits_termines import func_kpi_nb_produits_termines
 from page_production_1.barchart_trs import func_barchart_trs
@@ -22,8 +23,10 @@ def func_page_production_1():
         </style>
     """, unsafe_allow_html=True)
 
-    # Paramètre temps planifié — colonne étroite pour ne pas prendre toute la largeur
-    col_param, _ = st.columns([1, 3])
+    # Filtres de période + paramètre temps planifié
+    col_filter, col_param = st.columns([3, 1])
+    with col_filter:
+        date_debut, date_fin = func_date_filter(key="prod1")
     with col_param:
         temps_planifie_h = st.number_input(
             "Temps planifié / jour (h)",
@@ -38,14 +41,14 @@ def func_page_production_1():
         with col1:
             st.markdown("<h2 style='text-align: center;'>Quantité Produite</h2>", unsafe_allow_html=True)
             with st.container(border=True):
-                func_kpi_nb_produits_termines()
-                func_barchart_nb_produits_termines_par_jour()
+                func_kpi_nb_produits_termines(date_debut, date_fin)
+                func_barchart_nb_produits_termines_par_jour(date_debut, date_fin)
 
         with col2:
             st.markdown("<h2 style='text-align: center;'>TRS</h2>", unsafe_allow_html=True)
             with st.container(border=True):
-                func_barchart_trs(temps_planifie_h)
+                func_barchart_trs(temps_planifie_h, date_debut, date_fin)
 
     # Ligne du bas : évolution taux de fonctionnement
     with st.container(border=True):
-        func_linechart_taux_fonctionnement(temps_planifie_h)
+        func_linechart_taux_fonctionnement(temps_planifie_h, date_debut, date_fin)
