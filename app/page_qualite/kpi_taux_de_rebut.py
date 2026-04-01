@@ -4,13 +4,19 @@ from matplotlib.patches import Wedge, Circle
 import numpy as np
 from utils.cnx_sql import func_query_sql_df
 
-def func_kpi_taux_de_rebut():
+def func_kpi_taux_de_rebut(date_debut=None, date_fin=None):
     # ── 1. Requête SQL ──────────────────────────────────────────────
-    query = """
-        SELECT 
+    filtre = (
+        f"WHERE DATE(TimeStamp) BETWEEN '{date_debut}' AND '{date_fin}'"
+        if date_debut
+        else ""
+    )
+    query = f"""
+        SELECT
             SUM(CASE WHEN ErrorID != 0 THEN 1 ELSE 0 END) AS nok,
             COUNT(PNo) AS total
         FROM `tblpartsreport`
+        {filtre}
     """
     df = func_query_sql_df(query)
 
@@ -28,7 +34,7 @@ def func_kpi_taux_de_rebut():
     TEAL = "#1de9b6"  # Vert/Teal
     RED = "#e05252"   # Rouge
     BG = "#111111"    # Fond sombre
-    
+
     # Couleur du texte dynamique
     value_color = TEAL if taux_rebut <= LIMITE else RED
 
@@ -55,8 +61,8 @@ def func_kpi_taux_de_rebut():
     # Note : Dans matplotlib Wedge, theta1 est l'angle de départ (sens anti-horaire)
     # Pour avoir le vert à gauche (0-5%), il faut qu'il soit entre 180° et angle_limite
     wedge_green = Wedge(
-        center=(0, 0), r=R_OUTER, 
-        theta1=angle_limite, theta2=180, 
+        center=(0, 0), r=R_OUTER,
+        theta1=angle_limite, theta2=180,
         width=R_OUTER - R_INNER,
         facecolor=TEAL, edgecolor='none'
     )
@@ -64,8 +70,8 @@ def func_kpi_taux_de_rebut():
 
     # ── Arc ROUGE : du début (0°) jusqu'à la Limite (5%) ──
     wedge_red = Wedge(
-        center=(0, 0), r=R_OUTER, 
-        theta1=0, theta2=angle_limite, 
+        center=(0, 0), r=R_OUTER,
+        theta1=0, theta2=angle_limite,
         width=R_OUTER - R_INNER,
         facecolor=RED, edgecolor='none'
     )
@@ -74,7 +80,7 @@ def func_kpi_taux_de_rebut():
     # ── 4. Aiguille BLANCHE ─────────────────────────────────────────
     needle_len = 0.85
     angle_rad = np.radians(angle_aiguille)
-    
+
     # Coordonnées de la pointe
     tip_x = needle_len * np.cos(angle_rad)
     tip_y = needle_len * np.sin(angle_rad)
@@ -88,7 +94,7 @@ def func_kpi_taux_de_rebut():
 
     # ── 5. Texte et Titre ───────────────────────────────────────────
     # Affichage du % au centre
-    ax.text(0, 0.35, f"{taux_rebut}%", ha='center', va='center', 
+    ax.text(0, 0.35, f"{taux_rebut}%", ha='center', va='center',
             fontsize=50, fontweight='bold', color=value_color)
 
     # Labels de graduation (Optionnel)

@@ -3,10 +3,16 @@ import altair as alt
 import pandas as pd
 from utils.cnx_sql import func_query_sql_df
 
-def func_linechart_taux_fonctionnement(temps_planifie_h: int):
+def func_linechart_taux_fonctionnement(temps_planifie_h: int, date_debut=None, date_fin=None):
 
     temps_planifie_s = temps_planifie_h * 3600
     cible = 90  # % cible quotidienne
+
+    filtre = (
+        f"AND DATE(TimeStamp) BETWEEN '{date_debut}' AND '{date_fin}'"
+        if date_debut
+        else ""
+    )
 
     # tblmachinereport(AutomaticMode, Busy, ErrorL0/L1/L2, TimeStamp)
     # Taux de fonctionnement par jour = temps fonctionnel / temps planifié
@@ -34,6 +40,7 @@ def func_linechart_taux_fonctionnement(temps_planifie_h: int):
             1) AS taux_fonctionnement
         FROM etats
         WHERE next_ts IS NOT NULL
+        {filtre}
         GROUP BY jour
         ORDER BY jour
     """)

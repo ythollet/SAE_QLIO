@@ -3,14 +3,20 @@ import altair as alt
 import pandas as pd
 from utils.cnx_sql import func_query_sql_df
 
-def func_barchart_top5_causes_nok():
-    query = """
+def func_barchart_top5_causes_nok(date_debut=None, date_fin=None):
+    filtre = (
+        f"AND DATE(p.TimeStamp) BETWEEN '{date_debut}' AND '{date_fin}'"
+        if date_debut
+        else ""
+    )
+    query = f"""
         SELECT
             COALESCE(e.Description, CONCAT('Erreur ', p.ErrorID)) AS cause,
             COUNT(p.ErrorID) AS nb_erreurs
         FROM tblpartsreport p
         LEFT JOIN tblerrorcodes e ON p.ErrorID = e.ErrorID
         WHERE p.ErrorID != 0
+        {filtre}
         GROUP BY p.ErrorID, e.Description
         ORDER BY nb_erreurs DESC
         LIMIT 5
