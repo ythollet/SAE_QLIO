@@ -1,5 +1,5 @@
 import streamlit as st
-from datetime import date, timedelta
+from datetime import date
 
 
 def func_date_filter(key: str = "date_filter"):
@@ -11,7 +11,7 @@ def func_date_filter(key: str = "date_filter"):
     with col1:
         date_debut = st.date_input(
             "Date de début",
-            value=date.today() - timedelta(days=365),
+            value=date(2023, 1, 1),
             key=f"{key}_debut"
         )
     with col2:
