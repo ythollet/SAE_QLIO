@@ -1,7 +1,9 @@
+import streamlit as st
 import bcrypt
 from utils.cnx_sql import func_get_cnx_sql
 
 
+@st.cache_resource
 def init_users_table():
     """Crée la table users et les comptes par défaut si inexistants."""
     conn = func_get_cnx_sql()

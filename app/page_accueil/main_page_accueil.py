@@ -1,6 +1,5 @@
 import streamlit as st
 
-
 MODULES = [
     {
         "key": "production_1",
@@ -69,8 +68,13 @@ def func_page_accueil():
             border: 1px solid #2e3040;
             border-radius: 10px;
             padding: 24px 20px 20px 20px;
+            cursor: pointer;
+            transition: border-color 0.2s;
             min-height: 160px;
             position: relative;
+        }
+        .carte:hover {
+            border-color: #1de9b6;
         }
         .carte-initiale {
             width: 38px;
@@ -109,6 +113,7 @@ def func_page_accueil():
         <div class="accueil-sous-titre">Sélectionnez un module pour accéder aux données détaillées.</div>
     """, unsafe_allow_html=True)
 
+    # Récupérer les pages disponibles selon le rôle
     pages_dispo = st.session_state.get("pages_nav", {})
 
     # Ligne 1 : 3 cartes
@@ -121,10 +126,9 @@ def func_page_accueil():
 
     # Ligne 2 : 3 cartes
     cols2 = st.columns(3)
-    for i, module in enumerate(MODULES[3:6]):
+    for i, module in enumerate(MODULES[3:]):
         with cols2[i]:
             _carte(module, pages_dispo)
-
 
 
 def _carte(module: dict, pages_dispo: dict):
@@ -138,7 +142,8 @@ def _carte(module: dict, pages_dispo: dict):
     """, unsafe_allow_html=True)
 
     page_obj = pages_dispo.get(module["page_title"])
-    label = f"Accéder →"
+    label = f"Accéder à {module['titre'].capitalize()}"
+    
     if page_obj:
         if st.button(label, key=f"btn_{module['key']}", use_container_width=True):
             st.switch_page(page_obj)
