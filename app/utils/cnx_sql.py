@@ -9,7 +9,7 @@ DB_HOST = os.environ.get("DB_HOST", "db")
 DB_USER = os.environ.get("DB_USER", "client")
 DB_PASSWORD = os.environ.get("DB_PASSWORD", "mdp")
 DB_NAME = os.environ.get("DB_NAME", "mes4")
-DB_PORT = int(os.environ.get("DB_PORT", "3308"))
+DB_PORT = int(os.environ.get("DB_PORT", "3306"))
 
 def func_get_cnx_sql():
     """

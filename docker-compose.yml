@@ -10,16 +10,16 @@ services:
       MYSQL_DATABASE: mes4
       MYSQL_USER: client
       MYSQL_PASSWORD: mdp # À changer en production !
-      MYSQL_TCP_PORT: 3308
+      # NE PAS ajouter MYSQL_TCP_PORT ici — MySQL écoute sur 3306 en interne
     volumes:
       - db_data:/var/lib/mysql # Pour persister les données de la base de données
-      # IMPORT AUTOMATIQUE DU FICHIER SQL DANS LE CONTENEUR: 
+      # IMPORT AUTOMATIQUE DU FICHIER SQL DANS LE CONTENEUR:
       - "./Fichiers SQL/FestoMES-2025-12-02.sql:/docker-entrypoint-initdb.d/init.sql"
       - "./Fichiers SQL/create_users_table.sql:/docker-entrypoint-initdb.d/create_users.sql"
     networks:
       - app_network
     ports:
-      - "3308:3308"
+      - "3308:3306"  # 3308 en externe (hôte) → 3306 en interne (Docker)
 
   # --- Service d'Administration de la Base de Données (phpMyAdmin) ---
   phpmyadmin:
@@ -30,6 +30,7 @@ services:
       - "8082:80"  # Accès via http://localhost:8082
     environment:
       PMA_HOST: db # Nom du service MySQL dans le réseau Docker Compose
+      PMA_PORT: 3306
       UPLOAD_LIMIT: 128M      # Augmente la limite de taille de fichier à 128 Mo
       MEMORY_LIMIT: 512M      # Augmente la mémoire disponible à 512 Mo
       MAX_EXECUTION_TIME: 600 # Augmente le temps d'exécution à 600 secondes (10 minutes)
@@ -52,6 +53,7 @@ services:
       DB_USER: client
       DB_PASSWORD: mdp
       DB_NAME: mes4
+      DB_PORT: 3306  # Port interne Docker (MySQL écoute sur 3306 dans le réseau Docker)
       STREAMLIT_SERVER_RUN_ON_SAVE: "true"
       STREAMLIT_SERVER_FILE_WATCHER_TYPE: "poll"
     depends_on:
