@@ -5,21 +5,54 @@ services:
     container_name: mysql_db
     restart: always
     environment:
-      # Variables d'environnement importantes pour MySQL
-      MYSQL_ROOT_PASSWORD: root  # À changer en production !
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: mes4
       MYSQL_USER: client
-      MYSQL_PASSWORD: mdp # À changer en production !
-      # NE PAS ajouter MYSQL_TCP_PORT ici — MySQL écoute sur 3306 en interne
+      MYSQL_PASSWORD: mdp
     volumes:
-      - db_data:/var/lib/mysql # Pour persister les données de la base de données
-      # IMPORT AUTOMATIQUE DU FICHIER SQL DANS LE CONTENEUR:
-      - "./Fichiers SQL/FestoMES-2025-12-02.sql:/docker-entrypoint-initdb.d/init.sql"
+      - db_data:/var/lib/mysql
+      - "./Fichiers SQL/FestoMES-2026-03-31-2.sql:/docker-entrypoint-initdb.d/init.sql"
       - "./Fichiers SQL/create_users_table.sql:/docker-entrypoint-initdb.d/create_users.sql"
     networks:
       - app_network
     ports:
-      - "3308:3306"  # 3308 en externe (hôte) → 3306 en interne (Docker)
+      - "3308:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uclient", "-pmdp"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # --- Service d'import automatique si le fichier SQL change ---
+  db-init:
+    image: mysql:8.0
+    container_name: mysql_db_init
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - "./Fichiers SQL/FestoMES-2026-03-31-2.sql:/init.sql"
+      - "./Fichiers SQL/create_users_table.sql:/create_users.sql"
+      - db_init_hash:/hash
+    environment:
+      MYSQL_PWD: mdp
+    command: >
+      bash -c "
+        HASH=$$(md5sum /init.sql | cut -d' ' -f1);
+        STORED=$$(cat /hash/init.md5 2>/dev/null || echo '');
+        if [ \"$$HASH\" != \"$$STORED\" ]; then
+          echo '[db-init] Fichier SQL modifié — réimportation...';
+          mysql -hdb -uclient -pmdp mes4 < /init.sql;
+          mysql -hdb -uclient -pmdp mes4 < /create_users.sql;
+          echo $$HASH > /hash/init.md5;
+          echo '[db-init] Import terminé.';
+        else
+          echo '[db-init] Fichier SQL inchangé — aucune action.';
+        fi
+      "
+    restart: on-failure
+    networks:
+      - app_network
 
   # --- Service d'Administration de la Base de Données (phpMyAdmin) ---
   phpmyadmin:
@@ -27,15 +60,16 @@ services:
     container_name: phpmyadmin_interface
     restart: always
     ports:
-      - "8082:80"  # Accès via http://localhost:8082
+      - "8082:80"
     environment:
-      PMA_HOST: db # Nom du service MySQL dans le réseau Docker Compose
+      PMA_HOST: db
       PMA_PORT: 3306
-      UPLOAD_LIMIT: 128M      # Augmente la limite de taille de fichier à 128 Mo
-      MEMORY_LIMIT: 512M      # Augmente la mémoire disponible à 512 Mo
-      MAX_EXECUTION_TIME: 600 # Augmente le temps d'exécution à 600 secondes (10 minutes)
+      UPLOAD_LIMIT: 128M
+      MEMORY_LIMIT: 512M
+      MAX_EXECUTION_TIME: 600
     depends_on:
-      - db # S'assurer que MySQL est démarré avant
+      db:
+        condition: service_healthy
     networks:
       - app_network
 
@@ -46,26 +80,26 @@ services:
       dockerfile: Dockerfile
     container_name: streamlit_dashboard
     ports:
-      - "8501:8501" # Accès via http://localhost:8501
+      - "8501:8501"
     environment:
-      # Les variables d'environnement sont utiles pour la connexion à la base de données
-      DB_HOST: db # IMPORTANT : Utiliser le nom du service 'db' comme hostname
+      DB_HOST: db
       DB_USER: client
       DB_PASSWORD: mdp
       DB_NAME: mes4
-      DB_PORT: 3306  # Port interne Docker (MySQL écoute sur 3306 dans le réseau Docker)
+      DB_PORT: 3306
       STREAMLIT_SERVER_RUN_ON_SAVE: "true"
       STREAMLIT_SERVER_FILE_WATCHER_TYPE: "poll"
     depends_on:
-      - db # S'assurer que MySQL est démarré avant
+      db:
+        condition: service_healthy
     networks:
       - app_network
     volumes:
       - ./app:/app
 
-# Définition des volumes et réseaux
 volumes:
   db_data:
+  db_init_hash:
 
 networks:
   app_network:
