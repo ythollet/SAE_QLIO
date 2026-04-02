@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from utils.auth import init_users_table
 from page_production_1.main_page_production_1 import func_page_production_1
 from page_production_2.main_page_production_2 import func_page_production_2
 from page_logistique_stock.main_page_logistique_stock import func_page_logistique_stock
@@ -10,6 +11,9 @@ from login_page import login_page
 
 # La configuration de la page doit être la première commande Streamlit
 st.set_page_config(layout='wide')
+
+# Initialisation de la table users (idempotent - sans effet si déjà créée)
+init_users_table()
 
 # Vérifier l'authentification
 if 'authenticated' not in st.session_state:

@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.cnx_sql import authenticate_user
+from utils.auth import authenticate_user
 
 def login_page():
     # CSS pour styliser la page

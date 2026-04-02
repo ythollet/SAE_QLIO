@@ -2,7 +2,6 @@ import streamlit as st
 import mysql.connector
 import pandas as pd
 import os
-import bcrypt
 
 # Récupération des informations de connexion depuis les variables d'environnement
 # "db" est souvent utilisé dans les environnements Docker, "localhost" en local
@@ -36,24 +35,4 @@ def func_query_sql_df(in_query: str):
     try:
         return pd.read_sql(in_query, conn)
     finally:
-        conn.close()
-
-def authenticate_user(username, password):
-    """
-    Vérifie les credentials de l'utilisateur.
-    Retourne le rôle si authentifié, sinon None.
-    """
-    conn = func_get_cnx_sql()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT password_hash, role FROM users WHERE username = %s", (username,))
-        result = cursor.fetchone()
-        if result:
-            stored_hash, role = result
-            # Vérification du mot de passe haché
-            if bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8')):
-                return role
-        return None
-    finally:
-        cursor.close()
         conn.close()

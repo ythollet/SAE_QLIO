@@ -1,14 +1,7 @@
 import streamlit as st
 import bcrypt
-import mysql.connector
-import os
+from utils.cnx_sql import func_get_cnx_sql
 
-# Connexion DB
-DB_HOST = os.environ.get("DB_HOST", "localhost")
-DB_USER = os.environ.get("DB_USER", "client")
-DB_PASSWORD = os.environ.get("DB_PASSWORD", "mdp")
-DB_NAME = os.environ.get("DB_NAME", "mes4")
-DB_PORT = int(os.environ.get("DB_PORT", "3308"))
 
 def func_page_admin():
     st.title("Administration")
@@ -27,28 +20,26 @@ def func_page_admin():
                 st.error("Veuillez remplir tous les champs.")
             else:
                 try:
-                    conn = mysql.connector.connect(
-                        host=DB_HOST,
-                        user=DB_USER,
-                        password=DB_PASSWORD,
-                        database=DB_NAME,
-                        port=DB_PORT
-                    )
+                    conn = func_get_cnx_sql()
                     cursor = conn.cursor()
 
                     # Hacher le mot de passe
                     password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
                     # Insérer l'utilisateur
-                    cursor.execute("INSERT INTO users (username, password_hash, role) VALUES (%s, %s, %s)", (username, password_hash, role))
+                    cursor.execute(
+                        "INSERT INTO users (username, password_hash, role) VALUES (%s, %s, %s)",
+                        (username, password_hash, role)
+                    )
                     conn.commit()
 
                     st.success(f"Utilisateur '{username}' créé avec succès avec le rôle '{role}'.")
 
-                except mysql.connector.IntegrityError:
-                    st.error("Le nom d'utilisateur existe déjà.")
                 except Exception as e:
-                    st.error(f"Erreur lors de la création de l'utilisateur: {e}")
+                    if "Duplicate entry" in str(e) or "1062" in str(e):
+                        st.error("Le nom d'utilisateur existe déjà.")
+                    else:
+                        st.error(f"Erreur lors de la création de l'utilisateur: {e}")
                 finally:
                     if 'cursor' in locals():
                         cursor.close()
