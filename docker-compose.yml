@@ -10,16 +10,15 @@ services:
       MYSQL_DATABASE: mes4
       MYSQL_USER: client
       MYSQL_PASSWORD: mdp # À changer en production !
-      MYSQL_TCP_PORT: 3308
     volumes:
       - db_data:/var/lib/mysql # Pour persister les données de la base de données
-      # IMPORT AUTOMATIQUE DU FICHIER SQL DANS LE CONTENEUR: 
+      # IMPORT AUTOMATIQUE DU FICHIER SQL DANS LE CONTENEUR:
       - "./Fichiers SQL/FestoMES-2025-12-02.sql:/docker-entrypoint-initdb.d/init.sql"
       - "./Fichiers SQL/create_users_table.sql:/docker-entrypoint-initdb.d/create_users.sql"
     networks:
       - app_network
     ports:
-      - "3308:3308"
+      - "3308:3306"
 
   # --- Service d'Administration de la Base de Données (phpMyAdmin) ---
   phpmyadmin:
@@ -52,6 +51,7 @@ services:
       DB_USER: client
       DB_PASSWORD: mdp
       DB_NAME: mes4
+      DB_PORT: 3306
       STREAMLIT_SERVER_RUN_ON_SAVE: "true"
       STREAMLIT_SERVER_FILE_WATCHER_TYPE: "poll"
     depends_on:
