@@ -1,7 +1,10 @@
 import streamlit as st
+from utils.top_banner import func_top_banner
 
 
 def func_page_404():
+    func_top_banner(key="p404", show_date_filter=False)
+
     st.markdown("""
         <style>
         .bloc-404 {
@@ -9,7 +12,7 @@ def func_page_404():
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 70vh;
+            height: 60vh;
             text-align: center;
         }
         .chiffre-404 {
