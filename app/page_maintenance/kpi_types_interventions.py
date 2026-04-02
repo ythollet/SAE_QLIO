@@ -6,15 +6,21 @@ import streamlit.components.v1 as components
 from utils.cnx_sql import func_query_sql_df
 
 
-def func_kpi_types_interventions():
+def func_kpi_types_interventions(date_debut=None, date_fin=None):
     """Affiche un camembert Préventif vs Curatif et le total au centre."""
-    query = """
+    filtre = (
+        f"WHERE DATE(fo.End) BETWEEN '{date_debut}' AND '{date_fin}'"
+        if date_debut
+        else ""
+    )
+    query = f"""
     SELECT
         fo.Error,
         wpt.Description AS WorkPlantTypeName
     FROM tblfinorderpos fo
     LEFT JOIN tblworkplandef wpd ON fo.WPNo = wpd.WPNo
-    LEFT JOIN tblworkplantype wpt ON wpd.Type = wpt.Type;
+    LEFT JOIN tblworkplantype wpt ON wpd.Type = wpt.Type
+    {filtre};
     """
 
     try:
