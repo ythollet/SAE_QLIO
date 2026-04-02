@@ -10,10 +10,12 @@ services:
       MYSQL_DATABASE: mes4
       MYSQL_USER: client
       MYSQL_PASSWORD: mdp # À changer en production !
+      MYSQL_TCP_PORT: 3308
     volumes:
       - db_data:/var/lib/mysql # Pour persister les données de la base de données
       # IMPORT AUTOMATIQUE DU FICHIER SQL DANS LE CONTENEUR: 
       - "./Fichiers SQL/FestoMES-2025-12-02.sql:/docker-entrypoint-initdb.d/init.sql"
+      - "./Fichiers SQL/create_users_table.sql:/docker-entrypoint-initdb.d/create_users.sql"
     networks:
       - app_network
     ports:
