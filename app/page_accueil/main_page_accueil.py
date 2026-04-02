@@ -1,6 +1,5 @@
 import streamlit as st
 
-
 MODULES = [
     {
         "key": "production_1",
@@ -36,6 +35,13 @@ MODULES = [
         "titre": "MAINTENANCE",
         "description": "État machines et interventions",
         "page_title": "Page Maintenance",
+    },
+    {
+        "key": "carte_logistique",
+        "initiale": "🗺️",
+        "titre": "CARTE LOGISTIQUE",
+        "description": "Chaîne usine → client (Festo)",
+        "page_title": "Carte Logistique",
     },
 ]
 
@@ -118,7 +124,7 @@ def func_page_accueil():
 
     st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 
-    # Ligne 2 : 2 cartes + 1 espace
+    # Ligne 2 : 3 cartes
     cols2 = st.columns(3)
     for i, module in enumerate(MODULES[3:]):
         with cols2[i]:
@@ -137,6 +143,7 @@ def _carte(module: dict, pages_dispo: dict):
 
     page_obj = pages_dispo.get(module["page_title"])
     label = f"Accéder à {module['titre'].capitalize()}"
+    
     if page_obj:
         if st.button(label, key=f"btn_{module['key']}", use_container_width=True):
             st.switch_page(page_obj)

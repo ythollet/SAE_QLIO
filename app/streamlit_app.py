@@ -9,6 +9,7 @@ from page_logistique_stock.main_page_logistique_stock import func_page_logistiqu
 from page_qualite.main_page_qualite import func_page_qualite
 from page_maintenance.main_page_maintenance import func_page_maintenance
 from page_admin.main_page_admin import func_page_admin
+from page_carte_logistique.main_page_carte_logistique import func_page_carte_logistique
 from login_page import login_page
 
 # La configuration de la page doit être la première commande Streamlit
@@ -24,7 +25,6 @@ if 'authenticated' not in st.session_state:
 if not st.session_state['authenticated']:
     login_page()
 else:
-    # Afficher le rôle dans la sidebar
     st.sidebar.write(f"Connecté en tant que: {st.session_state['username']} ({st.session_state['role']})")
     if st.sidebar.button("Se déconnecter"):
         st.session_state['authenticated'] = False
@@ -35,16 +35,17 @@ else:
     st.sidebar.caption("[🗄️ Source de données](http://localhost:8082)")
 
     # Construction des pages
-    page_accueil   = st.Page(func_page_accueil,         title='Accueil',              icon="🏠")
-    page_prod1     = st.Page(func_page_production_1,    title='Page Production 1',    icon="📊")
-    page_prod2     = st.Page(func_page_production_2,    title='Page Production 2',    icon="📊")
-    page_logistique= st.Page(func_page_logistique_stock,title='Page Logistique/Stock',icon="📦")
-    page_qualite   = st.Page(func_page_qualite,         title='Page Qualité',         icon="📈")
-    page_maintenance=st.Page(func_page_maintenance,     title='Page Maintenance',     icon="🛠️")
-    page_admin     = st.Page(func_page_admin,           title='Administration',       icon="👤")
-    page_404       = st.Page(func_page_404,             title='Page 404',             icon="🚫")
+    page_accueil    = st.Page(func_page_accueil,            title='Accueil',               icon="🏠")
+    page_prod1      = st.Page(func_page_production_1,       title='Page Production 1',     icon="📊")
+    page_prod2      = st.Page(func_page_production_2,       title='Page Production 2',     icon="📊")
+    page_logistique = st.Page(func_page_logistique_stock,   title='Page Logistique/Stock', icon="📦")
+    page_qualite    = st.Page(func_page_qualite,            title='Page Qualité',          icon="📈")
+    page_maintenance= st.Page(func_page_maintenance,        title='Page Maintenance',      icon="🛠️")
+    page_admin      = st.Page(func_page_admin,              title='Administration',        icon="👤")
+    page_carte      = st.Page(func_page_carte_logistique,   title='Carte Logistique',      icon="🗺️")
+    page_404        = st.Page(func_page_404,                title='Page 404',              icon="🚫")
 
-    all_pages = [page_prod1, page_prod2, page_logistique, page_qualite, page_maintenance]
+    all_pages = [page_prod1, page_prod2, page_logistique, page_qualite, page_maintenance, page_carte]
 
     role = st.session_state['role']
     if role == 'admin':
@@ -54,7 +55,7 @@ else:
     elif role == 'production':
         pages = [page_accueil, page_prod1, page_prod2, page_404]
     elif role == 'logistique':
-        pages = [page_accueil, page_logistique, page_404]
+        pages = [page_accueil, page_logistique, page_carte, page_404]
     else:
         pages = [page_accueil, page_404]
 
